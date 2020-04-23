@@ -1,7 +1,9 @@
 package githubsearch;
 
 import org.junit.Assert;
+import org.junit.jupiter.api.Test;
 
+import javax.xml.transform.Source;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -21,6 +23,20 @@ class XRefIndexTest {
                 new ArrayList<>(),
                 new ArrayList<CallExpr>(Arrays.asList(
                         new CallExpr("foo", null, new SourceLocation("java.util", "", 10, 15))
+                ))
+        );
+    }
+    SymbolPackage p2() {
+        String pkg = "somepack";
+        return new SymbolPackage(
+                pkg,
+                new ArrayList<>(Arrays.asList(
+                        new MethodDecl("coo", "double", new SourceLocation("somepack", "", 10, 15), new ArrayList<>())
+                )),
+                new ArrayList<>(Arrays.asList("java.util")),
+                new ArrayList<>(Arrays.asList(
+                        new CallExpr("foo", null, new SourceLocation("somepack", "", 10, 20)),
+                        new CallExpr("coo", null, new SourceLocation("somepack", "", 11, 20))
                 ))
         );
     }
@@ -48,5 +64,14 @@ class XRefIndexTest {
         XRefIndex index = new XRefIndex();
         index.resolveSymbols(p1());
         callExprMatchPackages(new String[]{"java.util"}, index.getCallSites("foo"));
+    }
+
+    @Test
+    void resolveAccrossPackages() {
+        XRefIndex index = new XRefIndex();
+        index.resolveSymbols(p1());
+        index.resolveSymbols(p2());
+        callExprMatchPackages(new String[]{"java.util", "somepack"}, index.getCallSites("foo"));
+        callExprMatchPackages(new String[]{"somepack"}, index.getCallSites("coo"));
     }
 }
