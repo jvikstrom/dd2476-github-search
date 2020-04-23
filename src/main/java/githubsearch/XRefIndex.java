@@ -13,6 +13,18 @@ public class XRefIndex {
     private final HashMap<String, Set<CallExpr>> callers = new HashMap<>(); // Method caller name to packages.
     private final HashMap<MethodDecl, Set<CallExpr>> resolvedCalls = new HashMap<>(); // Method declaration to call sites.
 
+    // Returns all call sites for functions named methodName.
+    public Set<CallExpr> getCallSites(String methodName) {
+        List<MethodDecl> mds = methodDecls.get(methodName);
+        Set<CallExpr> ces = new HashSet<>();
+        for(MethodDecl md : mds) {
+            Set<CallExpr> cess = resolvedCalls.get(md);
+            if(cess != null) {
+                ces.addAll(cess);
+            }
+        }
+        return ces;
+    }
     // Resolves all symbols in the SymbolPackage and adds them to the index.
     // The SymbolPackage must have a package name, else nothing is resolved. FIXME: Add this as a limitation in the report.
     public void resolveSymbols(SymbolPackage pack) {

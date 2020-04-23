@@ -10,7 +10,6 @@ import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
-import javassist.compiler.ast.CallExpr;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,7 +39,7 @@ public class SymbolExtractor {
         return new ArrayList<>();
     }
     // parse Parses the sourceCode and returns relevant symbols.
-    static SymbolPackage parse(String sourceCode) {
+    static SymbolPackage parse(String url, String sourceCode) {
         if(extractor == null) {
             throw new RuntimeException("Extractor has not been initialized.");
         }
@@ -49,18 +48,19 @@ public class SymbolExtractor {
         if(cu.getPackageDeclaration().isPresent()) {
             packageName = cu.getPackageDeclaration().get().getNameAsString();
         }
-        ArrayList<SymbolPackage.MethodDeclaration> decls = new ArrayList<>();
+        String finalPackageName = packageName;
+        ArrayList<MethodDecl> decls = new ArrayList<>();
         cu.findAll(MethodDeclaration.class).forEach(md -> {
             ArrayList<String> parents = getParents(md.getParentNode());
-            decls.add(new SymbolPackage.MethodDeclaration(md.getNameAsString(), md.getTypeAsString(), parents));
+            decls.add(new MethodDecl(md.getNameAsString(), md.getTypeAsString(), new SourceLocation(finalPackageName, url, 0, 0), parents));
         });
         ArrayList<String> imports = new ArrayList<>();
         cu.findAll(ImportDeclaration.class).forEach(id -> {
             imports.add(id.getNameAsString());
         });
-        ArrayList<SymbolPackage.CallExpr> callers = new ArrayList<>();
+        ArrayList<CallExpr> callers = new ArrayList<>();
         cu.findAll(MethodCallExpr.class).forEach(ce -> {
-            callers.add(new SymbolPackage.CallExpr(ce.getNameAsString(), null));
+            callers.add(new CallExpr(ce.getNameAsString(), null, new SourceLocation(finalPackageName, url, 0,0)));
         });
         return new SymbolPackage(packageName, decls, imports, callers);
     }
