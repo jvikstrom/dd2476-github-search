@@ -1,13 +1,19 @@
 package githubsearch;
 
+import java.io.IOException;
 import java.util.*;
 
 public class HashXRefIndexStorage implements XRefIndexStorage {
-    private final HashMap<String, SymbolPackage> packages = new HashMap<>(); // Package -> package imports
-    private final HashMap<String, List<MethodDecl>> methodDecls = new HashMap<>(); // name -> method decls
-    private final HashMap<String, List<CallExpr>> callExprs = new HashMap<>(); // name -> call exprs
-    private final HashMap<MethodDecl, Set<CallExpr>> resolvedCalls = new HashMap<>(); // Method declaration to call sites.
+    protected HashMap<String, SymbolPackage> packages = new HashMap<>(); // Package -> package imports
+    protected HashMap<String, List<MethodDecl>> methodDecls = new HashMap<>(); // name -> method decls
+    protected HashMap<String, List<CallExpr>> callExprs = new HashMap<>(); // name -> call exprs
+    protected HashMap<MethodDecl, Set<CallExpr>> resolvedCalls = new HashMap<>(); // Method declaration to call sites.
 
+
+    @Override
+    public void flush() throws IOException {
+        // No need to do any cleanup.
+    }
     @Override
     public void storeMethodDecl(MethodDecl md) {
         String name = md.resolvedName();

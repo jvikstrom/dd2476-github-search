@@ -2,6 +2,7 @@ package githubsearch;
 
 import com.sun.istack.internal.NotNull;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
@@ -9,6 +10,8 @@ import java.util.Set;
  * A thin wrapper around the storage unit for the XRefIndex, to allow easy generalization to persistent storage.
  */
 public interface XRefIndexStorage {
+    // flushes is called before a storage is dereferenced.
+    void flush() throws IOException;
     // storeMethodDecl stores a method declaration.
     void storeMethodDecl(MethodDecl md);
     void storeCallExpr(CallExpr ce);
