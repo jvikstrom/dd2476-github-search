@@ -61,14 +61,14 @@ class XRefIndexTest {
 
     @org.junit.jupiter.api.Test
     void resolveSymbolsSimpleTest() {
-        XRefIndex index = new XRefIndex();
+        XRefIndex index = new XRefIndex(new HashXRefIndexStorage());
         index.resolveSymbols(p1());
         callExprMatchPackages(new String[]{"java.util"}, index.getCallSites("foo"));
     }
 
     @Test
     void resolveAccrossPackages() {
-        XRefIndex index = new XRefIndex();
+        XRefIndex index = new XRefIndex(new HashXRefIndexStorage());
         index.resolveSymbols(p1());
         index.resolveSymbols(p2());
         callExprMatchPackages(new String[]{"java.util", "somepack"}, index.getCallSites("foo"));

@@ -15,6 +15,9 @@ public class CallExpr {
         return name;
     }
     Optional<String> getType() {
+        if(type == null) {
+            return Optional.empty();
+        }
         return Optional.of(type);
     }
     SourceLocation getSourceLocation() {

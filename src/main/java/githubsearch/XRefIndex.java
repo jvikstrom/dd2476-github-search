@@ -38,7 +38,7 @@ public class XRefIndex {
         if(!pack.getPackageName().isPresent()) {
             return;
         }
-        storage.storePackageImports(pack);
+        storage.storePackage(pack);
 //        packages.put(pack.getPackageName().get(), pack);
 /*        for(MethodDecl md : pack.getMethods()) {
             if(!methodDecls.containsKey(md.name)) {

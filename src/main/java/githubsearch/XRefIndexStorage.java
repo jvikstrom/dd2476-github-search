@@ -13,7 +13,7 @@ public interface XRefIndexStorage {
     void storeMethodDecl(MethodDecl md);
     void storeCallExpr(CallExpr ce);
     // storePackageImports should save the imports for a specific package.
-    void storePackageImports(SymbolPackage pack);
+    void storePackage(SymbolPackage pack);
     // packageImports should return true if the source package imports pack.
     boolean packageImports(String source, String pack);
 
