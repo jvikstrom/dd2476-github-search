@@ -1,5 +1,6 @@
 package githubsearch;
 
+import com.github.javaparser.ParseException;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
@@ -39,11 +40,16 @@ public class SymbolExtractor {
         return new ArrayList<>();
     }
     // parse Parses the sourceCode and returns relevant symbols.
-    static SymbolPackage parse(String url, String sourceCode) {
+    static SymbolPackage parse(String url, String sourceCode) throws ParseException {
         if(extractor == null) {
             throw new RuntimeException("Extractor has not been initialized.");
         }
-        CompilationUnit cu = StaticJavaParser.parse(sourceCode);
+        CompilationUnit cu;
+        try {
+            cu = StaticJavaParser.parse(sourceCode);
+        } catch(Exception e) {
+            throw new ParseException();
+        }
         String packageName = null;
         if(cu.getPackageDeclaration().isPresent()) {
             packageName = cu.getPackageDeclaration().get().getNameAsString();

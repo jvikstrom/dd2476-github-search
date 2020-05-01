@@ -40,4 +40,9 @@ public class SourceLocation {
         }
         return false;
     }
+
+    @Override
+    public String toString() {
+        return pkg + " " + url + " " + col + " " + row;
+    }
 }
