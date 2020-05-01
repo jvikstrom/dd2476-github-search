@@ -1,5 +1,5 @@
 package githubsearch;
-import githubsearch.crawler.RepositoryCrawler;
+import githubsearch.crawler.LocalFolderCrawler;
 
 import java.io.IOException;
 import java.lang.String;
@@ -7,7 +7,7 @@ import java.net.URI;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        RepositoryCrawler crawler = new RepositoryCrawler(URI.create("file:/home/jovi/school/zookeeper"), new CrawlSymbolExtractor());
+        LocalFolderCrawler crawler = new LocalFolderCrawler(URI.create("file:/home/jovi/school/zookeeper"), new CrawlSymbolExtractor());
         System.out.println("Start crawling!");
         crawler.crawl();
 
