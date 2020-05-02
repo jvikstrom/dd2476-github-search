@@ -39,6 +39,7 @@ public class Response {
         string.append("\n");
         for (Entry entry : entries) {
             string.append(entry.URL);
+            string.append("\n");
         }
         return string.toString();
     }

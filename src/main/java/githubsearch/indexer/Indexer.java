@@ -14,7 +14,7 @@ public class Indexer {
 
     public Response search(Query query) {
         try {
-            URL url = new URL("http://" + address + ":" + port + "/github/_search");
+            URL url = new URL("http://" + address + ":" + port + "/github/_search?size=1000");
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("GET");
             con.setRequestProperty("Content-Type", "application/json; utf-8");
@@ -78,7 +78,8 @@ public class Indexer {
                 "\"LINE\":\"" + line + "\"," +
                 "\"URL\":\"" + URL + "\"" +
                 "}";
-        index(jsonPayload, "placeholder-id-0");
+        index(jsonPayload, "url-" + URL.replaceAll("[/<>\\\\?#:]", "-")
+                +"-name-" + name.replaceAll("[/<>\\\\?#:]", "-"));
     }
 
     public void indexMethod(String name, String returnType, String URL, int line) {
@@ -89,6 +90,8 @@ public class Indexer {
                 "\"URL\":\"" + URL + "\"," +
                 "\"RETURN_TYPE\":\"" + returnType + "\"" +
                 "}";
-        index(jsonPayload, "placeholder-id-1");
+        index(jsonPayload, "url-" + URL.replaceAll("[/<>\\\\?#: ]", "-")
+                +"-name-" + name.replaceAll("[/<>\\\\?#:]", "-")
+                + "-return-type-" + returnType.replaceAll("[/<>\\\\?#: ]", "-"));
     }
 }
