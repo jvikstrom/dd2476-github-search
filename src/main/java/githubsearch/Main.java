@@ -1,5 +1,6 @@
 package githubsearch;
 import com.github.javaparser.ParseException;
+import githubsearch.config.Config;
 import githubsearch.crawler.FileData;
 import githubsearch.crawler.JavaFileStorage;
 import githubsearch.crawler.LocalFolderCrawler;
@@ -13,10 +14,9 @@ import java.net.URL;
 import java.util.Iterator;
 
 public class Main {
-    final static String javaFileRootPath = "/home/jovi/school/search/java-files"; // An empty folder where all java files will be saved.
-    final static String javaFileIndexPath = "/home/jovi/school/search/java-index"; // Will create the file at this path containing the file metadatas (the folders must exist)
     public static void main(String[] args) throws IOException, ParseException {
-        JavaFileStorage storage = new JavaFileStorage(javaFileRootPath, javaFileIndexPath);
+        Config conf = new Config("config.properties");
+        JavaFileStorage storage = new JavaFileStorage(conf.javaFileRoot, conf.javaIndexFile);
         Iterator<FileData> files = storage.files();
         Log.i("Indexer", "Starting indexing");
         while(files.hasNext()) {
