@@ -1,14 +1,15 @@
 package githubsearch.crawler;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URL;
 
 /**
  * This runs the crawler routine. It clones a bunch of git repositories, grabs all java files in them and saves them in the specified directory.
  */
-public class Main implements CrawlSubscriber{
+public class Main {
+    final static String tmpRepositoryRootPath = "/home/jovi/school/search/raw-repos"; // The folder where we will save all raw repositories.
+    final static String javaFileRootPath = "/home/jovi/school/search/java-files"; // An empty folder where all java files will be saved.
+    final static String javaFileIndexPath = "/home/jovi/school/search/java-index"; // Will create the file at this path containing the file metadatas (the folders must exist)
+
     // This contains a list of "notable"/big Java projects that are publicly available. We want to make sure we clone and index these.
     final static String[] repositoryURLs = new String[]{
             // First some Apache projects
@@ -105,28 +106,8 @@ public class Main implements CrawlSubscriber{
             // That's the first page of: https://github.com/spring-projects, still have 6 more to go
     };
     public static void main(String[] args) throws IOException {
-        final String tmpRepositoryRootPath = "/home/jovi/school/search/raw-repos"; // The folder where we will save all raw repositories.
-        final String javaFileRootPath = "/home/jovi/school/search/java-files"; // An empty folder where all java files will be saved.
-        final String javaFileIndexPath = "/home/jovi/school/search/java-index"; // Will create the file at this path containing the file metadatas (the folders must exist)
 
         MultiGitCloner cloner = new MultiGitCloner(repositoryURLs, 1, 2000, tmpRepositoryRootPath, javaFileRootPath, javaFileIndexPath);
         cloner.crawl();
-
-/*        LocalFolderCrawler crawler = new LocalFolderCrawler(new File("/home/jovi/school/zookeeper").toPath(), new URL("http://zookeeper.com"), new Main());
-        System.out.println("Start crawling!");
-        crawler.crawl();
-        GitCloner cloner = new GitCloner("/home/jovi/Documents");
-        try {
-            System.out.println("Start cloning...");
-            String p = cloner.gitClone(URI.create("https://github.com/jvikstrom/dd2476-github-search.git"));
-            System.out.println("Path from cloner: " + p);
-        } catch(GitCloner.CloneException e) {
-            System.err.println("Exception when cloning: " + e);
-        }*/
-    }
-
-    @Override
-    public void onSourceFile(String url, String sourceCode) {
-        System.out.println("Source file at: " + url + " contains: " + sourceCode);
     }
 }

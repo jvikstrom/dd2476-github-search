@@ -12,12 +12,12 @@ import java.util.UUID;
 public class JavaFileStorage {
     private final String root;
     private final String indexFilePath;
-    JavaFileStorage(String root, String indexFilePath) {
+    public JavaFileStorage(String root, String indexFilePath) {
         this.root = root;
         this.indexFilePath = indexFilePath;
     }
 
-    public synchronized void writeFile(String url, String sourceCode) throws IOException {
+    protected synchronized void writeFile(String url, String sourceCode) throws IOException {
         // Writes the file and puts metadata to an index.
         String name = UUID.randomUUID().toString() + ".java";
         BufferedWriter writer = new BufferedWriter(new FileWriter(indexFilePath, true));
@@ -30,7 +30,7 @@ public class JavaFileStorage {
         writer.close();
     }
 
-    Iterator<FileData> files() throws IOException {
+    public Iterator<FileData> files() throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader(indexFilePath));
         return new Iterator<FileData>() {
             String nextLine = reader.readLine();
