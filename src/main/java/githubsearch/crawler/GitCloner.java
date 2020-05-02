@@ -1,6 +1,9 @@
 package githubsearch.crawler;
 
+import org.apache.commons.io.IOUtils;
+
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -36,7 +39,8 @@ public class GitCloner {
             Process p = Runtime.getRuntime().exec("git -C " + storageRoot + " clone --depth 1 " + repositoryURI.toString() + " " + repoName);
             int exitVal = p.waitFor();
             if(exitVal != 0) {
-                throw new Exception("Exit value from clone was not 0, was: " + exitVal);
+                String errStream = IOUtils.toString(p.getErrorStream(), StandardCharsets.UTF_8);
+                throw new Exception("Exit value from clone was not 0, was: " + exitVal + ", error stream: " + errStream);
             }
         } catch(Exception e) {
             throw new CloneException(e);

@@ -52,7 +52,8 @@ public class MultiGitCloner implements Crawler, CrawlSubscriber{
                 }catch(URISyntaxException e) {
                     System.out.println("URI: " + url + " has an invalid URI format: " + e);
                 } catch(GitCloner.CloneException e) {
-                    System.out.println("ClonerException for URI: " + url + ", " + e);
+                    e.printStackTrace();
+                    System.out.println("ClonerException for URI: " + url + ", " + e.e);
                 }
                 try {
                     Thread.sleep(waitTimeMs);

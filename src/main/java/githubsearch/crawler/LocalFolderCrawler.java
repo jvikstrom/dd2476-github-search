@@ -27,7 +27,14 @@ public class LocalFolderCrawler implements Crawler {
     public void crawl() throws IOException {
         for(Path p : Files.walk(root).filter(Files::isReadable).filter((path -> path.toString().toLowerCase().endsWith(".java"))).toArray(Path[]::new)) {
             List<String> bts = Files.readAllLines(p);
-            String url = repositoryURI.toString() + "/" + p.toString().substring(root.toString().length());
+            String psub = p.toString().substring(root.toString().length());
+            String repoURIS = repositoryURI.toString();
+            String url = repoURIS + "/" + psub;
+            if(repoURIS.contains("github")) {
+                // Github links are special.
+                url = repoURIS.substring(0, repoURIS.length()-4) + "/tree/master" + psub;
+            }
+
             listener.onSourceFile(url, String.join("\n", bts));
         }
     }
