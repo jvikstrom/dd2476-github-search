@@ -1,5 +1,7 @@
 package githubsearch.crawler;
 
+import githubsearch.util.Log;
+
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.io.IOException;
@@ -21,18 +23,21 @@ public class MultiGitCloner implements Crawler, CrawlSubscriber{
         final MultiGitCloner parent;
         final GitCloner cloner;
         final int waitTimeMs;
+        private static String tag = "CloneWorker";
         MultiGitClonerWorker(GitCloner cloner, MultiGitCloner parent, int waitTimeMs) {
             this.parent = parent;
             this.cloner = cloner;
             this.waitTimeMs = waitTimeMs;
         }
         public void crawl() throws IOException {
+            Log.i(tag, "Starting crawling");
             while(true) {
                 String url = parent.nextURL();
                 if(url == null) {
                     System.out.println("MultiGitClonerWorker done working");
                     return;
                 }
+                System.out.println("Clone repository at URL: " + url);
                 try {
                     String path = cloner.gitClone(new URI(url));
                     parent.onClonedURL(path, url);
@@ -83,14 +88,17 @@ public class MultiGitCloner implements Crawler, CrawlSubscriber{
         }
         List<Thread> threads = new ArrayList<>();
         for(MultiGitClonerWorker worker : workers) {
-            threads.add(new Thread(() -> {
+            Thread t = new Thread(() -> {
                 try {
                     worker.crawl();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }));
+            });
+            t.start();
+            threads.add(t);
         }
+        Log.d("MultiClone", "Waiting for workers to finish");
         for(Thread t : threads) {
             try {
                 t.join(); // Wait for this to finish.
@@ -99,6 +107,7 @@ public class MultiGitCloner implements Crawler, CrawlSubscriber{
                 return;
             }
         }
+        Log.i("MultiClone", "Done cloning repositories");
     }
 
     @Override

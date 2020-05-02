@@ -109,7 +109,10 @@ public class Main implements CrawlSubscriber{
         final String javaFileRootPath = "/home/jovi/school/search/java-files"; // An empty folder where all java files will be saved.
         final String javaFileIndexPath = "/home/jovi/school/search/java-index"; // Will create the file at this path containing the file metadatas (the folders must exist)
 
-        LocalFolderCrawler crawler = new LocalFolderCrawler(new File("/home/jovi/school/zookeeper").toPath(), new URL("http://zookeeper.com"), new Main());
+        MultiGitCloner cloner = new MultiGitCloner(repositoryURLs, 1, 2000, tmpRepositoryRootPath, javaFileRootPath, javaFileIndexPath);
+        cloner.crawl();
+
+/*        LocalFolderCrawler crawler = new LocalFolderCrawler(new File("/home/jovi/school/zookeeper").toPath(), new URL("http://zookeeper.com"), new Main());
         System.out.println("Start crawling!");
         crawler.crawl();
         GitCloner cloner = new GitCloner("/home/jovi/Documents");
@@ -119,7 +122,7 @@ public class Main implements CrawlSubscriber{
             System.out.println("Path from cloner: " + p);
         } catch(GitCloner.CloneException e) {
             System.err.println("Exception when cloning: " + e);
-        }
+        }*/
     }
 
     @Override

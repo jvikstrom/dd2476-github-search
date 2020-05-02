@@ -1,13 +1,15 @@
 package githubsearch;
 import githubsearch.crawler.LocalFolderCrawler;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.String;
 import java.net.URI;
+import java.net.URL;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        LocalFolderCrawler crawler = new LocalFolderCrawler(URI.create("file:/home/jovi/school/zookeeper"), new CrawlSymbolExtractor());
+        LocalFolderCrawler crawler = new LocalFolderCrawler(new File("/home/jovi/school/zookeeper").toPath(), new URL("https://zookeeper"), new CrawlSymbolExtractor());
         System.out.println("Start crawling!");
         crawler.crawl();
 
