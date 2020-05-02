@@ -1,7 +1,9 @@
 package githubsearch.crawler;
 
 import githubsearch.util.Log;
+import org.apache.commons.io.FileUtils;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.io.IOException;
@@ -22,12 +24,14 @@ public class MultiGitCloner implements Crawler, CrawlSubscriber{
     public static class MultiGitClonerWorker implements Crawler {
         final MultiGitCloner parent;
         final GitCloner cloner;
+        final CloneCache cloneCache;
         final int waitTimeMs;
         private static String tag = "CloneWorker";
-        MultiGitClonerWorker(GitCloner cloner, MultiGitCloner parent, int waitTimeMs) {
+        MultiGitClonerWorker(GitCloner cloner, CloneCache cloneCache, MultiGitCloner parent, int waitTimeMs) {
             this.parent = parent;
             this.cloner = cloner;
             this.waitTimeMs = waitTimeMs;
+            this.cloneCache = cloneCache;
         }
         public void crawl() throws IOException {
             Log.i(tag, "Starting crawling");
@@ -37,7 +41,11 @@ public class MultiGitCloner implements Crawler, CrawlSubscriber{
                     System.out.println("MultiGitClonerWorker done working");
                     return;
                 }
-                System.out.println("Clone repository at URL: " + url);
+                if(!cloneCache.shouldClone(url)) {
+                    Log.i(tag, "Skipping " + url + ", was already cloned");
+                    continue;
+                }
+                Log.i(tag, "Clone repository at URL: " + url);
                 try {
                     String path = cloner.gitClone(new URI(url));
                     parent.onClonedURL(path, url);
@@ -72,19 +80,21 @@ public class MultiGitCloner implements Crawler, CrawlSubscriber{
     private List<MultiGitClonerWorker> workers = new ArrayList<>();
     private final AtomicInteger currentURLIdx = new AtomicInteger(0);
     private final JavaFileStorage storage;
+    private final CloneCache cloneCache;
 
-    MultiGitCloner(String[] urls, int nWorkers, int waitTimeMs, String repositoryStorageRoot, String javaFileRoot, String javaIndexFile) {
+    MultiGitCloner(String[] urls, int nWorkers, int waitTimeMs, String repositoryStorageRoot, String javaFileRoot, String javaIndexFile, String cloneCachePath) {
         this.urls = urls;
         this.nWorkers = nWorkers;
         this.waitTimeMs = waitTimeMs;
         this.repositoryStorageRoot = repositoryStorageRoot;
         this.storage = new JavaFileStorage(javaFileRoot, javaIndexFile);
+        this.cloneCache = new CloneCache(cloneCachePath);
     }
 
     public void crawl() throws IOException {
         GitCloner cloner = new GitCloner(repositoryStorageRoot);
         for(int i = 0; i < nWorkers; i++) {
-            workers.add(new MultiGitClonerWorker(cloner, this, waitTimeMs));
+            workers.add(new MultiGitClonerWorker(cloner, cloneCache, this, waitTimeMs));
         }
         List<Thread> threads = new ArrayList<>();
         for(MultiGitClonerWorker worker : workers) {
@@ -126,7 +136,8 @@ public class MultiGitCloner implements Crawler, CrawlSubscriber{
         try {
             LocalFolderCrawler crawler = new LocalFolderCrawler(Paths.get(path), new URL(url), this);
             crawler.crawl();
-            // FIXME: Delete the repository at path. We no longer need it.
+            cloneCache.onClone(url);
+            FileUtils.deleteDirectory(new File(path));
         } catch(MalformedURLException e) {
             System.err.println("Error creating URL, malformed: " + e);
         } catch(IOException e) {

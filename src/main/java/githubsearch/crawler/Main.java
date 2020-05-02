@@ -9,6 +9,7 @@ public class Main {
     final static String tmpRepositoryRootPath = "/home/jovi/school/search/raw-repos"; // The folder where we will save all raw repositories.
     final static String javaFileRootPath = "/home/jovi/school/search/java-files"; // An empty folder where all java files will be saved.
     final static String javaFileIndexPath = "/home/jovi/school/search/java-index"; // Will create the file at this path containing the file metadatas (the folders must exist)
+    final static String cloneCachePath = "/home/jovi/school/search/clone-cache";
 
     // This contains a list of "notable"/big Java projects that are publicly available. We want to make sure we clone and index these.
     final static String[] repositoryURLs = new String[]{
@@ -107,7 +108,7 @@ public class Main {
     };
     public static void main(String[] args) throws IOException {
 
-        MultiGitCloner cloner = new MultiGitCloner(repositoryURLs, 1, 2000, tmpRepositoryRootPath, javaFileRootPath, javaFileIndexPath);
+        MultiGitCloner cloner = new MultiGitCloner(repositoryURLs, 1, 2000, tmpRepositoryRootPath, javaFileRootPath, javaFileIndexPath, cloneCachePath);
         cloner.crawl();
     }
 }
