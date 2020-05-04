@@ -18,7 +18,7 @@ public class SymbolPackage {
         this.imports = imports;
         this.callExprs = callExprs;
     }
-    Optional<String> getPackageName() {
+    public Optional<String> getPackageName() {
         return Optional.of(packageName);
     }
     ArrayList<MethodDecl> getMethods() {

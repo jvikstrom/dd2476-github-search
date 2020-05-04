@@ -11,16 +11,16 @@ public class CallExpr {
         this.type = type;
         this.loc = loc;
     }
-    String getName() {
+    public String getName() {
         return name;
     }
-    Optional<String> getType() {
+    public Optional<String> getType() {
         if(type == null) {
             return Optional.empty();
         }
         return Optional.of(type);
     }
-    SourceLocation getSourceLocation() {
+    public SourceLocation getSourceLocation() {
         return loc;
     }
 
