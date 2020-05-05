@@ -48,6 +48,7 @@ public class SymbolExtractor {
         try {
             cu = StaticJavaParser.parse(sourceCode);
         } catch(Exception e) {
+            System.err.println(e.getMessage());
             throw new ParseException();
         }
         String packageName = null;

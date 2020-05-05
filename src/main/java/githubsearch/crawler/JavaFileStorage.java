@@ -45,11 +45,13 @@ public class JavaFileStorage {
                     return null;
                 }
                 String name = nextLine.split(":")[0];
-                String url = nextLine.substring(name.length());
+                String url = nextLine.substring(name.length() + 1);
                 try {
                     List<String> lines = Files.readAllLines(new File(root + "/" + name).toPath());
                     String source = String.join("\n", lines);
-                    return new FileData(source, new FileMetadata(name, url));
+                    FileData fileData = new FileData(source, new FileMetadata(name, url));
+                    nextLine = reader.readLine();
+                    return fileData;
                 } catch(IOException e) {
                     throw new RuntimeException("Could not read file: " + root + "/" + name + ", exception: " + e);
                 }
