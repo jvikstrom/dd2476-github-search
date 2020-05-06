@@ -1,6 +1,7 @@
 package githubsearch;
 
 import com.github.javaparser.ParseException;
+import com.github.javaparser.Range;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
@@ -59,7 +60,13 @@ public class SymbolExtractor {
         ArrayList<MethodDecl> decls = new ArrayList<>();
         cu.findAll(MethodDeclaration.class).forEach(md -> {
             ArrayList<String> parents = getParents(md.getParentNode());
-            decls.add(new MethodDecl(md.getNameAsString(), md.getTypeAsString(), new SourceLocation(finalPackageName, url, 0, 0), parents));
+            int row = 1, col = 1;
+            if(md.getRange().isPresent()) {
+                Range be = md.getRange().get();
+                row = be.begin.line;
+                col = be.begin.column;
+            }
+            decls.add(new MethodDecl(md.getNameAsString(), md.getTypeAsString(), new SourceLocation(finalPackageName, url, col, row), parents));
         });
         ArrayList<String> imports = new ArrayList<>();
         cu.findAll(ImportDeclaration.class).forEach(id -> {
@@ -67,7 +74,13 @@ public class SymbolExtractor {
         });
         ArrayList<CallExpr> callers = new ArrayList<>();
         cu.findAll(MethodCallExpr.class).forEach(ce -> {
-            callers.add(new CallExpr(ce.getNameAsString(), null, new SourceLocation(finalPackageName, url, 0,0)));
+            int row = 1, col = 1;
+            if(ce.getRange().isPresent()) {
+                Range be = ce.getRange().get();
+                row = be.begin.line;
+                col = be.begin.column;
+            }
+            callers.add(new CallExpr(ce.getNameAsString(), null, new SourceLocation(finalPackageName, url, col,row)));
         });
         return new SymbolPackage(packageName, decls, imports, callers);
     }
