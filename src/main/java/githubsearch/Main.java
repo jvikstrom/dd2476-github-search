@@ -21,6 +21,7 @@ public class Main {
         JavaFileStorage storage = new JavaFileStorage(conf.javaFileRoot, conf.javaIndexFile);
         Iterator<FileData> files = storage.files();
         Indexer indexer = new Indexer();
+        indexer.createIndex();
         Log.i("Indexer", "Starting indexing");
 
         long startTime = System.currentTimeMillis();
