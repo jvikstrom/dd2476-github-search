@@ -1,5 +1,7 @@
 package githubsearch.indexer;
 
+import githubsearch.util.Log;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -63,6 +65,19 @@ public class Indexer {
             os.write(input, 0, input.length);
         }
 
+        int responseCode = con.getResponseCode();
+        Log.i("Indexer", "Response from creating index: " + con.getResponseCode());
+        if(responseCode != 200) {
+            try (BufferedReader br = new BufferedReader(
+                    new InputStreamReader(con.getErrorStream(), StandardCharsets.UTF_8))) {
+                StringBuilder response = new StringBuilder();
+                String responseLine = null;
+                while ((responseLine = br.readLine()) != null) {
+                    response.append(responseLine.trim());
+                }
+                Log.e("Indexer", "RESPONSE: " + response.toString());
+            }
+        }
     }
 
     private void index(String jsonPayload, String id) throws IllegalArgumentException {
