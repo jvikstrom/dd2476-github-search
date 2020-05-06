@@ -23,19 +23,40 @@ public class Main {
         Indexer indexer = new Indexer();
         Log.i("Indexer", "Starting indexing");
 
-
+        long startTime = System.currentTimeMillis();
+        ImportDAGStorage dagStorage = new HashImportDAGStorage();
+        ImportDAGGraphRanker ranker = new ImportDAGGraphRanker(dagStorage);
+        while(files.hasNext()) {
+            FileData file = files.next();
+            try {
+                SymbolPackage symbols = SymbolExtractor.parse(file.metadata.url, file.source);
+                ranker.processPackage(symbols);
+            } catch(ParseException e) {
+                System.err.println(e.getMessage());
+                //e.printStackTrace();
+            }
+        }
+        long endTime = System.currentTimeMillis();
+        System.out.println("Done processing dag");
+        files = storage.files();
         while (files.hasNext()) {
             FileData file = files.next();
             try {
                 SymbolPackage symbols = SymbolExtractor.parse(file.metadata.url, file.source);
-                for (MethodDecl method : symbols.getMethods()) {
-                    indexer.indexMethod(method.name, method.type, file.metadata.url, method.loc.getRow());
+                String pkg = "";
+                if(symbols.getPackageName().isPresent()) {
+                    pkg = symbols.getPackageName().get();
                 }
-                Log.d("Indexer", symbols.toString());
+                for (MethodDecl method : symbols.getMethods()) {
+                    indexer.indexMethod(method.name, method.type, file.metadata.url, method.loc.getRow(), ranker.getScore(pkg));
+                }
+                //Log.d("Indexer", symbols.toString());
             } catch (ParseException e) {
                 System.err.println(e.getMessage());
             }
         }
+        long finalEndTime = System.currentTimeMillis();
+        System.out.println("Time for first loop: " + (endTime - startTime) + ", time for second loop: " + (finalEndTime - endTime));
     }
 
 }

@@ -4,7 +4,7 @@ package githubsearch;
  * Ranks packages by the number of packages importing it.
  */
 public class ImportDAGGraphRanker {
-    final ImportDAGStorage storage;
+    private final ImportDAGStorage storage;
     public ImportDAGGraphRanker(ImportDAGStorage storage) {
         this.storage = storage;
     }
