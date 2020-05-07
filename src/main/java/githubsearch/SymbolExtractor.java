@@ -66,7 +66,14 @@ public class SymbolExtractor {
                 row = be.begin.line;
                 col = be.begin.column;
             }
-            decls.add(new MethodDecl(md.getNameAsString(), md.getTypeAsString(), new SourceLocation(finalPackageName, url, col, row), parents));
+            String className = "";
+            if(md.getParentNode().isPresent()) {
+                Node n = md.getParentNode().get();
+                if(n instanceof ClassOrInterfaceDeclaration) {
+                    className = ((ClassOrInterfaceDeclaration) n).getNameAsString();
+                }
+            }
+            decls.add(new MethodDecl(md.getNameAsString(), md.getTypeAsString(), className, new SourceLocation(finalPackageName, url, col, row), parents));
         });
         ArrayList<String> imports = new ArrayList<>();
         cu.findAll(ImportDeclaration.class).forEach(id -> {

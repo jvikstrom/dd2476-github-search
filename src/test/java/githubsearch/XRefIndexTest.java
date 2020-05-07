@@ -17,8 +17,8 @@ class XRefIndexTest {
         return new SymbolPackage(
                 pkg,
                 new ArrayList<MethodDecl>(Arrays.asList(
-                        new MethodDecl("foo", "int", new SourceLocation("java.util", "", 10, 20), new ArrayList<>()),
-                        new MethodDecl("goo", "void", new SourceLocation("java.util", "", 10, 20), new ArrayList<>())
+                        new MethodDecl("foo", "int", "foo", new SourceLocation("java.util", "", 10, 20), new ArrayList<>()),
+                        new MethodDecl("goo", "void", "foo", new SourceLocation("java.util", "", 10, 20), new ArrayList<>())
                 )),
                 new ArrayList<>(),
                 new ArrayList<CallExpr>(Arrays.asList(
@@ -31,7 +31,7 @@ class XRefIndexTest {
         return new SymbolPackage(
                 pkg,
                 new ArrayList<>(Arrays.asList(
-                        new MethodDecl("coo", "double", new SourceLocation("somepack", "", 10, 15), new ArrayList<>())
+                        new MethodDecl("coo", "double", "foo", new SourceLocation("somepack", "", 10, 15), new ArrayList<>())
                 )),
                 new ArrayList<>(Arrays.asList("java.util")),
                 new ArrayList<>(Arrays.asList(

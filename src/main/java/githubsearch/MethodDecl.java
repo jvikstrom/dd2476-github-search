@@ -5,11 +5,13 @@ import java.util.ArrayList;
 public class MethodDecl {
     final String name;
     final String type;
+    final String className;
     final SourceLocation loc;
     final ArrayList<String> parents;
-    public MethodDecl(String name, String type, SourceLocation loc, ArrayList<String> parents) {
+    public MethodDecl(String name, String type, String className, SourceLocation loc, ArrayList<String> parents) {
         this.name = name;
         this.type = type;
+        this.className = className;
         this.loc = loc;
         this.parents = parents;
     }
