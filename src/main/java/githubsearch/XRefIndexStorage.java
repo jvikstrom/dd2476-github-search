@@ -37,4 +37,6 @@ public interface XRefIndexStorage {
 
     Set<CallExpr> getCallExprsResolvingToName(String methodName);
 
+    Set<CallExpr> getCallExprsResolvingToMethodDecl(MethodDecl md);
+
 }

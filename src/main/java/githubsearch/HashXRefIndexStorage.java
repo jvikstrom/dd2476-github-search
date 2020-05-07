@@ -10,6 +10,9 @@ public class HashXRefIndexStorage implements XRefIndexStorage {
     protected HashMap<MethodDecl, Set<CallExpr>> resolvedCalls = new HashMap<>(); // Method declaration to call sites.
 
 
+    public Set<CallExpr> getCallExprsResolvingToMethodDecl(MethodDecl md) {
+        return resolvedCalls.get(md);
+    }
     @Override
     public void flush() throws IOException {
         // No need to do any cleanup.

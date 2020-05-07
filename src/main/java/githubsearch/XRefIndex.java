@@ -19,6 +19,9 @@ public class XRefIndex {
     public XRefIndex(@NotNull XRefIndexStorage storage) {
         this.storage = storage;
     }
+    public Set<CallExpr> getCallExprs(MethodDecl md) {
+        return storage.getCallExprsResolvingToMethodDecl(md);
+    }
     // Returns all call sites for functions named methodName.
     public Set<CallExpr> getCallSites(String methodName) {
         return storage.getCallExprsResolvingToName(methodName);

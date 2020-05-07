@@ -14,6 +14,7 @@ import java.lang.String;
 import java.net.URI;
 import java.net.URL;
 import java.util.Iterator;
+import java.util.Set;
 
 public class Main {
     public static void main(String[] args) throws IOException, ParseException {
@@ -27,11 +28,14 @@ public class Main {
         long startTime = System.currentTimeMillis();
         ImportDAGStorage dagStorage = new HashImportDAGStorage();
         ImportDAGGraphRanker ranker = new ImportDAGGraphRanker(dagStorage);
+        HashXRefIndexStorage xrefStorage = new HashXRefIndexStorage();
+        XRefIndex xref = new XRefIndex(xrefStorage);
         while(files.hasNext()) {
             FileData file = files.next();
             try {
                 SymbolPackage symbols = SymbolExtractor.parse(file.metadata.url, file.source);
                 ranker.processPackage(symbols);
+                xref.resolveSymbols(symbols);
             } catch(ParseException e) {
                 System.err.println(e.getMessage());
                 //e.printStackTrace();
@@ -49,6 +53,7 @@ public class Main {
                     pkg = symbols.getPackageName().get();
                 }
                 for (MethodDecl method : symbols.getMethods()) {
+                    Set<CallExpr> callees = xref.getCallExprs(method);
                     indexer.indexMethod(method.name, method.type, file.metadata.url, method.loc.getRow(), ranker.getScore(pkg));
                 }
                 //Log.d("Indexer", symbols.toString());
