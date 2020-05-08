@@ -23,7 +23,8 @@ class XRefIndexTest {
                 new ArrayList<>(),
                 new ArrayList<CallExpr>(Arrays.asList(
                         new CallExpr("foo", null, new SourceLocation("java.util", "", 10, 15))
-                ))
+                )),
+                new ArrayList<ClassDecl>()
         );
     }
     SymbolPackage p2() {
@@ -37,7 +38,8 @@ class XRefIndexTest {
                 new ArrayList<>(Arrays.asList(
                         new CallExpr("foo", null, new SourceLocation("somepack", "", 10, 20)),
                         new CallExpr("coo", null, new SourceLocation("somepack", "", 11, 20))
-                ))
+                )),
+                new ArrayList<ClassDecl>()
         );
     }
 

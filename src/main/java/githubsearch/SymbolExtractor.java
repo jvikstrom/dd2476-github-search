@@ -89,6 +89,16 @@ public class SymbolExtractor {
             }
             callers.add(new CallExpr(ce.getNameAsString(), null, new SourceLocation(finalPackageName, url, col,row)));
         });
-        return new SymbolPackage(packageName, decls, imports, callers);
+        ArrayList<ClassDecl> classDecls = new ArrayList<>();
+        cu.findAll(ClassOrInterfaceDeclaration.class).forEach(ci -> {
+            int row = 1, col = 1;
+            if(ci.getRange().isPresent()) {
+                Range be = ci.getRange().get();
+                row = be.begin.line;
+                col = be.begin.column;
+            }
+            classDecls.add(new ClassDecl(ci.getNameAsString(), new SourceLocation(finalPackageName, url, col,row)));
+        });
+        return new SymbolPackage(packageName, decls, imports, callers, classDecls);
     }
 }

@@ -12,11 +12,14 @@ public class SymbolPackage {
     private final ArrayList<String> imports;
     // All function calls in the compilation unit.
     private final ArrayList<CallExpr> callExprs;
-    SymbolPackage(String pkg, ArrayList<MethodDecl> methods, ArrayList<String> imports, ArrayList<CallExpr> callExprs) {
+    // All classes or interfaces that are declared in the compilation unit.
+    private final ArrayList<ClassDecl> classDecls;
+    SymbolPackage(String pkg, ArrayList<MethodDecl> methods, ArrayList<String> imports, ArrayList<CallExpr> callExprs, ArrayList<ClassDecl> classDecls) {
         this.packageName = pkg;
         this.methods = methods;
         this.imports = imports;
         this.callExprs = callExprs;
+        this.classDecls = classDecls;
     }
     public Optional<String> getPackageName() {
         if(packageName == null) {
@@ -32,6 +35,9 @@ public class SymbolPackage {
     }
     ArrayList<CallExpr> getCallExprs() {
         return callExprs;
+    }
+    ArrayList<ClassDecl> getClassDecls() {
+        return classDecls;
     }
 
     @Override
