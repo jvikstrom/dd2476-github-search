@@ -1,0 +1,105 @@
+(ns frontend.core
+  (:require [reagent.core :as reagent :refer [atom]]
+            [ajax.core :refer [GET POST]]))
+
+(enable-console-print!)
+
+(println "This text is printed from src/frontend/core.cljs. Go ahead and edit it and see reloading in action.")
+
+;; define your app data so that it doesn't get over-written on reload
+
+(defonce response-atom (atom nil))
+(defonce name-atom (atom nil))
+(defonce return-type-atom (atom nil))
+(defonce return-type-toggle-atom (atom nil))
+
+(defn handler! [response]
+  (do (reset! response-atom response)
+      (println (str response))))
+
+(defn error-handler [{:keys [status status-text]}]
+  (.log js/console (str "something bad happened: " status " " status-text)))
+
+(defn create-query []
+  {:query
+   (if @return-type-toggle-atom
+     {:bool {:must [{:match
+                     {:NAME @name-atom}}
+                    {:match
+                     {:RETURN_TYPE @return-type-atom}}]}}
+     {:match
+      {:NAME @name-atom}})})
+(defn search
+  []
+  (POST "http://92.34.13.80:9200/github/_search?size=100"
+        {:handler         handler!
+         :error-handler   error-handler
+         :params          (create-query)
+         :format          :json
+         :response-format :json
+         :keywords?       true}))
+(defn search-button []
+  )
+
+(defn table-entry-style []
+  {:style
+   {:border     "1px solid gray"
+    :text-align "left"
+    :padding    "8px"}})
+
+(defn table-row-style-1 []
+  {:style
+   {:background-color "#dddddd"}})
+
+(defn main []
+  [:div
+   [:h1 "GitHub Index"]
+   [:form
+    {:on-submit (fn [e] (do (search)
+                            (.preventDefault e)))}
+    [:label "Method name: "]
+    [:input {:type      "text"
+             :value     @name-atom
+             :on-change (fn [val] (reset! name-atom (.-value (.-target val))))}]
+    [:div
+     [:label "Return type: "]
+     [:input {:type      "text"
+              :value     @return-type-atom
+              :on-change (fn [val] (reset! return-type-atom (.-value (.-target val))))
+              :disabled  (not @return-type-toggle-atom)}]
+     [:input {:type     "checkbox"
+              :on-click (fn [] (swap! return-type-toggle-atom (fn [val] (not val))))}]]
+    [:button {:on-click search} "Search"]]
+   (if (= (-> @response-atom
+              :hits
+              :hits)
+          [])
+     [:div "No search results were found."]
+     [:table {:style {:border          "1px solid black"
+                      :border-collapse "collapse"
+                      :width           "100%"}}
+      [:tbody
+       (->> @response-atom
+            :hits
+            :hits
+            (map :_source)
+            (map-indexed (fn [idx hit] [:tr {:key   (str "row-" idx)
+                                             :style (if (even? idx)
+                                                      {:background-color "#dddddd"}
+                                                      {})}
+                                        [:td {:style {
+                                                      :text-align "left"
+                                                      :padding    "8px"}}
+                                         (let [url (if (= (:line hit) 0)
+                                                     (:URL hit)
+                                                     (str (str (:URL hit) "#Lcd ..") (:LINE hit)))]
+                                           [:a {:href url} url])]])))]])])
+
+(reagent/render-component [main]
+                          (. js/document (getElementById "app")))
+
+(defn on-js-reload []
+  ;; optionally touch your app-state to force rerendering depending on
+  ;; your application
+  ;; (swap! app-state update-in [:__figwheel_counter] inc)
+  )
