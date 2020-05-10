@@ -55,7 +55,7 @@ public class Indexer {
                 "  }\n" +
                 "}\n";
         URL url = new URL("http://" + address + ":" + port + "/github");
-        HttpURLConnection con = (HttpURLConnection)url.openConnection();
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("PUT");
         con.setRequestProperty("Content-Type", "application/json; utf-8");
         con.setRequestProperty("Accept", "application/json");
@@ -67,7 +67,7 @@ public class Indexer {
 
         int responseCode = con.getResponseCode();
         Log.i("Indexer", "Response from creating index: " + con.getResponseCode());
-        if(responseCode != 200) {
+        if (responseCode != 200) {
             try (BufferedReader br = new BufferedReader(
                     new InputStreamReader(con.getErrorStream(), StandardCharsets.UTF_8))) {
                 StringBuilder response = new StringBuilder();
@@ -80,12 +80,12 @@ public class Indexer {
         }
     }
 
-    private void index(String jsonPayload, String id) throws IllegalArgumentException {
+    private void index(String jsonPayload, String index, String id) throws IllegalArgumentException {
         if (id.contains("/")) {
             throw new IllegalArgumentException("id can not contain forward slash '/': " + id);
         }
         try {
-            URL url = new URL("http://" + address + ":" + port + "/github/_doc/" + id);
+            URL url = new URL("http://" + address + ":" + port + "/" + index + "/_doc/" + id);
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("PUT");
             con.setRequestProperty("Content-Type", "application/json; utf-8");
@@ -112,27 +112,39 @@ public class Indexer {
 
     public void indexClass(String name, String URL, int line, double dagrank) {
         String jsonPayload = "{" +
-                "\"TYPE\":\"CLASS\"," +
                 "\"NAME\":\"" + name + "\"," +
                 "\"LINE\":\"" + line + "\"," +
                 "\"URL\":\"" + URL + "\"," +
                 "\"dagrank\":" + dagrank +
                 "}";
-        index(jsonPayload, "url-" + URL.replaceAll("[/<>\\\\?#:]", "-")
-                +"-name-" + name.replaceAll("[/<>\\\\?#:]", "-"));
+        index(jsonPayload, "class",
+                ("url-" + URL + "-name-" + name + "-line-" + line)
+                        .replaceAll("[/<>\\\\?#: ]", "-"));
     }
 
     public void indexMethod(String name, String returnType, String URL, int line, double dagrank) {
         String jsonPayload = "{" +
-                "\"TYPE\":\"METHOD\"," +
                 "\"NAME\":\"" + name + "\"," +
                 "\"LINE\":\"" + line + "\"," +
                 "\"URL\":\"" + URL + "\"," +
                 "\"RETURN_TYPE\":\"" + returnType + "\"," +
                 "\"dagrank\":" + dagrank +
                 "}";
-        index(jsonPayload, "url-" + URL.replaceAll("[/<>\\\\?#: ]", "-")
-                +"-name-" + name.replaceAll("[/<>\\\\?#:]", "-")
-                + "-return-type-" + returnType.replaceAll("[/<>\\\\?#: ]", "-"));
+        index(jsonPayload, "method",
+                ("url-" + URL + "-name-" + name + "-return-type-" + returnType + "-line-" + line)
+                        .replaceAll("[/<>\\\\?#: ]", "-"));
+    }
+
+    public void indexMethodCall(String name, String returnType, String URL, int line, double dagrank) {
+        String jsonPayload = "{" +
+                "\"NAME\":\"" + name + "\"," +
+                "\"LINE\":\"" + line + "\"," +
+                "\"URL\":\"" + URL + "\"," +
+                "\"RETURN_TYPE\":\"" + returnType + "\"," +
+                "\"dagrank\":" + dagrank +
+                "}";
+        index(jsonPayload, "method-call",
+                ("url-" + URL + "-name-" + name + "-return-type-" + returnType + "-line-" + line)
+                        .replaceAll("[/<>\\\\?#: ]", "-"));
     }
 }
