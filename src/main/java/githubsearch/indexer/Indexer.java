@@ -14,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 public class Indexer {
     private static final String address = "localhost";
     private static final String port = "9200";
+    public long totalTime = 0;
 
     public Response search(Query query) {
         try {
@@ -85,6 +86,7 @@ public class Indexer {
             throw new IllegalArgumentException("id can not contain forward slash '/': " + id);
         }
         try {
+            long start = System.currentTimeMillis();
             URL url = new URL("http://" + address + ":" + port + "/" + index + "/_doc/" + id);
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("PUT");
@@ -105,6 +107,7 @@ public class Indexer {
                     response.append(responseLine.trim());
                 }
             }
+            totalTime += (System.currentTimeMillis() - start);
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }

@@ -1,11 +1,10 @@
 package githubsearch;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 class HashImportDAGStorage implements ImportDAGStorage {
     private HashMap<String, Set<String>> pkgs = new HashMap<>();
+
     @Override
     public void addImporter(String pkg, String importer) {
         if(!pkgs.containsKey(pkg)) {
@@ -21,5 +20,19 @@ class HashImportDAGStorage implements ImportDAGStorage {
         }
         double score = pkgs.get(pkg).size() / (double)pkgs.size();
         return new Entry(pkg, score);
+    }
+
+    @Override
+    public int numEntries() {
+        return pkgs.size();
+    }
+
+    @Override
+    public Set<String> getImportsAt(String doc) {
+        return pkgs.get(doc);
+    }
+
+    public Iterator<String> keyIt() {
+        return pkgs.keySet().iterator();
     }
 }

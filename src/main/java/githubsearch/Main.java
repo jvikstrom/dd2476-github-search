@@ -30,7 +30,11 @@ public class Main {
         ImportDAGGraphRanker ranker = new ImportDAGGraphRanker(dagStorage);
         HashXRefIndexStorage xrefStorage = new HashXRefIndexStorage();
         XRefIndex xref = new XRefIndex(xrefStorage);
+        int nread = 0;
         while (files.hasNext()) {
+            nread++;
+            if(nread % 100 == 0)
+                System.out.println("Read ranker: " + nread);
             FileData file = files.next();
             try {
                 SymbolPackage symbols = SymbolExtractor.parse(file.metadata.url, file.source);
@@ -43,8 +47,14 @@ public class Main {
         }
         long endTime = System.currentTimeMillis();
         System.out.println("Done processing dag");
+        ranker.rank();
+
         files = storage.files();
+        nread = 0;
         while (files.hasNext()) {
+            nread++;
+            if(nread % 100 == 0)
+                System.out.println("Read elastic: " + nread);
             FileData file = files.next();
             try {
                 SymbolPackage symbols = SymbolExtractor.parse(file.metadata.url, file.source);
@@ -74,7 +84,10 @@ public class Main {
             }
         }
         long finalEndTime = System.currentTimeMillis();
+        long timeSpentElastic = (finalEndTime - endTime) - indexer.totalTime;
         System.out.println("Time for first loop: " + (endTime - startTime) + ", time for second loop: " + (finalEndTime - endTime));
+        long timeSpentElse = finalEndTime - endTime - timeSpentElastic;
+        System.out.println("Time spent blocking on elastic: " + timeSpentElastic + ", time spent remaining: " + timeSpentElse);
     }
 
 }
