@@ -56,9 +56,7 @@
   [:div
    [:h1 "GitHub Index"]
    [:form
-    {:on-submit (fn [e] (do (search (if index-atom
-                                      "method"
-                                      "class"))
+    {:on-submit (fn [e] (do (search @index-atom)
                             (.preventDefault e)))}
     [:form
      [:section
