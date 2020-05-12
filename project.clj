@@ -1,6 +1,6 @@
 (defproject frontend "0.1.0-SNAPSHOT"
-  :description "FIXME: write this!"
-  :url "http://example.com/FIXME"
+  :description "DD2476-Search-Frontend"
+  :url "http://92.34.13.80:3449/"
   :license {:name "Eclipse Public License"
             :url  "http://www.eclipse.org/legal/epl-v10.html"}
 

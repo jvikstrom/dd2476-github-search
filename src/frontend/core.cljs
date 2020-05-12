@@ -4,8 +4,6 @@
 
 (enable-console-print!)
 
-(println "This text is printed from src/frontend/core.cljs. Go ahead and edit it and see reloading in action.")
-
 ;; define your app data so that it doesn't get over-written on reload
 
 (defonce response-atom (atom nil))
@@ -41,18 +39,6 @@
          :format          :json
          :response-format :json
          :keywords?       true}))
-(defn search-button []
-  )
-
-(defn table-entry-style []
-  {:style
-   {:border     "1px solid gray"
-    :text-align "left"
-    :padding    "8px"}})
-
-(defn table-row-style-1 []
-  {:style
-   {:background-color "#dddddd"}})
 
 (defn main []
   [:div
@@ -133,9 +119,3 @@
 
 (reagent/render-component [main]
                           (. js/document (getElementById "app")))
-
-(defn on-js-reload []
-  ;; optionally touch your app-state to force rerendering depending on
-  ;; your application
-  ;; (swap! app-state update-in [:__figwheel_counter] inc)
-  )
