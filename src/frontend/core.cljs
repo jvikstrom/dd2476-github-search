@@ -23,7 +23,9 @@
 
 (defn create-query []
   {:query
-   (if @return-type-toggle-atom
+   (if (and @return-type-toggle-atom
+            (not (= @index-atom
+                    "class")))
      {:bool {:must [{:match
                      {:NAME @name-atom}}
                     {:match
@@ -92,9 +94,9 @@
      [:input {:type      "text"
               :value     @return-type-atom
               :on-change (fn [val] (reset! return-type-atom (.-value (.-target val))))
-              :disabled  (and (not @return-type-toggle-atom)
-                              (= @index-atom
-                                 "class"))}]
+              :disabled  (or (not @return-type-toggle-atom)
+                             (= @index-atom
+                                "class"))}]
      [:input {:type     "checkbox"
               :on-click (fn [] (swap! return-type-toggle-atom (fn [val] (not val))))
               :disabled (= @index-atom
