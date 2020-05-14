@@ -20,16 +20,17 @@
   (.log js/console (str "something bad happened: " status " " status-text)))
 
 (defn create-query []
-  {:query
-   (if (and @return-type-toggle-atom
-            (not (= @index-atom
-                    "class")))
-     {:bool {:must [{:match
-                     {:NAME @name-atom}}
-                    {:match
-                     {:RETURN_TYPE @return-type-atom}}]}}
-     {:match
-      {:NAME @name-atom}})})
+  {:sort  [{"dagrank" {:order "desc"}}
+           "_score"]
+   :query (if (and @return-type-toggle-atom
+                   (not (= @index-atom
+                           "class")))
+            {:bool {:must [{:match
+                            {:NAME @name-atom}}
+                           {:match
+                            {:RETURN_TYPE @return-type-atom}}]}}
+            {:match
+             {:NAME @name-atom}})})
 (defn search
   [index]
   (POST (str "http://92.34.13.80:9200/" index "/_search?size=10000")
